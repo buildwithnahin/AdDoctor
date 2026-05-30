@@ -48,7 +48,10 @@ class SyncMetaAdsData implements ShouldQueue
             }
         });
 
-        Log::info("SyncMetaAdsData: Completed daily sync process.");
+        Log::info("SyncMetaAdsData: Completed daily sync process. Dispatching Insight Engine...");
+
+        // Automatically run insight generation after fresh data is stored
+        \App\Jobs\GenerateInsights::dispatch();
     }
 
     protected function syncAccount(AdAccount $account)
