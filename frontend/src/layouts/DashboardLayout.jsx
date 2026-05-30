@@ -10,8 +10,8 @@ const DashboardLayout = ({ children }) => {
     const navigation = [
         { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
         { name: 'Insights', href: '/insights', icon: Target },
-        { name: 'Ad Accounts', href: '#', icon: Users },
-        { name: 'Settings', href: '#', icon: Settings },
+        { name: 'Ad Accounts', href: '/ad-accounts', icon: Users },
+        { name: 'Settings', href: '/settings', icon: Settings },
     ];
 
     return (

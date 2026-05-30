@@ -6,6 +6,8 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import MetaCallback from './pages/MetaCallback';
 import Insights from './pages/Insights';
+import AdAccounts from './pages/AdAccounts';
+import Settings from './pages/Settings';
 
 function App() {
   return (
@@ -36,6 +38,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <Insights />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/ad-accounts" 
+            element={
+              <ProtectedRoute>
+                <AdAccounts />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/settings" 
+            element={
+              <ProtectedRoute>
+                <Settings />
               </ProtectedRoute>
             } 
           />
