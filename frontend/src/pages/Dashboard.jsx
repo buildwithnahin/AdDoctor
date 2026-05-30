@@ -1,7 +1,32 @@
+import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import api from '../services/api';
 
 const Dashboard = () => {
     const { user, logout } = useAuth();
+    const [adAccounts, setAdAccounts] = useState([]);
+
+    useEffect(() => {
+        const fetchAccounts = async () => {
+            try {
+                const response = await api.get('/meta/accounts');
+                setAdAccounts(response.data);
+            } catch (error) {
+                console.error("Failed to fetch ad accounts", error);
+            }
+        };
+        fetchAccounts();
+    }, []);
+
+    const handleConnectMeta = async () => {
+        try {
+            const response = await api.get('/meta/auth-url');
+            window.location.href = response.data.url;
+        } catch (error) {
+            console.error("Failed to get auth URL", error);
+            alert("Could not connect to Meta at this time.");
+        }
+    };
 
     return (
         <div style={{ padding: '20px' }}>
@@ -12,11 +37,24 @@ const Dashboard = () => {
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
                 
-                {/* Placeholder Cards */}
+                {/* Meta Connect Card */}
                 <div style={cardStyle}>
-                    <h3>Connect Meta Ads Account</h3>
-                    <p>Link your Meta account to start importing your ad campaigns for analysis.</p>
-                    <button style={btnStyle}>Connect Account</button>
+                    <h3>Meta Ads Accounts</h3>
+                    {adAccounts.length > 0 ? (
+                        <ul style={{ paddingLeft: '20px' }}>
+                            {adAccounts.map(acc => (
+                                <li key={acc.id} style={{ marginBottom: '10px' }}>
+                                    <strong>{acc.name}</strong> 
+                                    <span style={{ fontSize: '0.85em', color: '#666', marginLeft: '10px' }}>({acc.status})</span>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p>Link your Meta account to start importing your ad campaigns for analysis.</p>
+                    )}
+                    <button onClick={handleConnectMeta} style={btnStyle}>
+                        {adAccounts.length > 0 ? 'Reconnect Meta Account' : 'Connect Meta Account'}
+                    </button>
                 </div>
 
                 <div style={cardStyle}>

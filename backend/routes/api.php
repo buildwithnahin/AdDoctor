@@ -25,6 +25,11 @@ Route::prefix('v1')->group(function () {
             return $request->user();
         });
 
-        // Dashboard/Ad Diagnostic routes to be added here.
+        // Meta Ads routes
+        Route::get('/meta/auth-url', [App\Http\Controllers\Api\V1\MetaController::class, 'authUrl']);
+        Route::post('/meta/callback', [App\Http\Controllers\Api\V1\MetaController::class, 'callback']);
+        Route::get('/meta/accounts', [App\Http\Controllers\Api\V1\MetaController::class, 'accounts']);
+        
+        // Ad Diagnostic routes to be added here.
     });
 });

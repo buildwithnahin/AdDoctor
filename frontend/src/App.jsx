@@ -4,6 +4,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import MetaCallback from './pages/MetaCallback';
 
 function App() {
   return (
@@ -21,9 +22,18 @@ function App() {
               </ProtectedRoute>
             } 
           />
+          <Route 
+            path="/meta/callback" 
+            element={
+              <ProtectedRoute>
+                <MetaCallback />
+              </ProtectedRoute>
+            } 
+          />
         </Routes>
       </Router>
     </AuthProvider>
+
   );
 }
 
