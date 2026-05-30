@@ -1,0 +1,7 @@
+frontend/node_modules/
+backend/vendor/
+.env
+.idea/
+.vscode/
+frontend-backup/
+backend-backup/
