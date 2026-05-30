@@ -30,6 +30,9 @@ class InsightEngine
      */
     public function analyzeUser(User $user, $date, $prevDate)
     {
+        // Clear old insights for this date to prevent duplicates on job re-runs
+        Insight::where('user_id', $user->id)->where('date', $date)->delete();
+
         // Fetch all ads belonging to this user with metrics for the specific comparison dates
         $ads = Ad::whereHas('adSet.campaign.adAccount', function($q) use ($user) {
             $q->where('user_id', $user->id);
@@ -102,23 +105,22 @@ class InsightEngine
                 'recommendation' => 'Verify landing page uptime, load speed, and tracking pixel setup.'
             ]);
         }
-    }
-
-    /**
-     * Store the insight avoiding exact duplicates.
+    }AI-enhanced insight safely in the database.
      */
     protected function createInsight(User $user, $date, array $data)
     {
-        Insight::firstOrCreate(
-            [
-                'user_id' => $user->id,
-                'date' => $date,
-                'title' => $data['title'],
-                'description' => $data['description'],
-            ],
-            [
-                'severity' => $data['severity'],
-                'root_cause' => $data['root_cause'],
+        $aiService = app(\App\Services\AI\OpenAIService::class);
+        $enhancedData = $aiService->enhanceInsight($data);
+
+        Insight::create([
+            'user_id' => $user->id,
+            'date' => $date,
+            'title' => $enhancedData['title'],
+            'description' => $enhancedData['description'],
+            'severity' => $enhancedData['severity'],
+            'root_cause' => $enhancedData['root_cause'],
+            'recommendation' => $enhancedData['recommendation'],
+        ]        'root_cause' => $data['root_cause'],
                 'recommendation' => $data['recommendation'],
             ]
         );
