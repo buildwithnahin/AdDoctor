@@ -60,7 +60,9 @@ const Dashboard = () => {
                 <div style={cardStyle}>
                     <h3>View Insights</h3>
                     <p>Discover AI-powered diagnoses of your current ad performance drops.</p>
-                    <button style={btnStyle}>Go to Insights</button>
+                    <button onClick={() => window.location.href = '/insights'} style={{...btnStyle, backgroundColor: '#0056b3', color: '#fff', border: 'none', borderRadius: '4px'}}>
+                        Go to Insights
+                    </button>
                 </div>
 
                 <div style={cardStyle}>

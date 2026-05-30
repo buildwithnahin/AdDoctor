@@ -30,6 +30,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/meta/callback', [App\Http\Controllers\Api\V1\MetaController::class, 'callback']);
         Route::get('/meta/accounts', [App\Http\Controllers\Api\V1\MetaController::class, 'accounts']);
         
-        // Ad Diagnostic routes to be added here.
+        // Insights Dashboard
+        Route::get('/insights', [App\Http\Controllers\Api\V1\InsightController::class, 'index']);
     });
 });

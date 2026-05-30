@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import MetaCallback from './pages/MetaCallback';
+import Insights from './pages/Insights';
 
 function App() {
   return (
@@ -30,9 +31,18 @@ function App() {
               </ProtectedRoute>
             } 
           />
+          <Route 
+            path="/insights" 
+            element={
+              <ProtectedRoute>
+                <Insights />
+              </ProtectedRoute>
+            } 
+          />
         </Routes>
       </Router>
     </AuthProvider>
+
 
   );
 }
