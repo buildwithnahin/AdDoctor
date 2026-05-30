@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import api from '../services/api';
 import DashboardLayout from '../layouts/DashboardLayout';
-import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card';
+import { Card, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
-import { MousePointerClick, CircleDollarSign, TrendingUp, AlertCircle, RefreshCw, Activity } from 'lucide-react';
+import { AlertCircle, RefreshCw, Activity, HeartPulse } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Dashboard = () => {
     const [adAccounts, setAdAccounts] = useState([]);
-    const [stats, setStats] = useState({ ctr: '-4.2%', cpc: '+12.5%', spend: '$842.50', score: '72/100' });
+    const [aiReport, setAiReport] = useState(null);
 
     useEffect(() => {
         const fetchAccounts = async () => {
@@ -19,7 +19,20 @@ const Dashboard = () => {
                 console.error("Failed to fetch ad accounts", error);
             }
         };
+
+        const fetchInsights = async () => {
+            try {
+                const response = await api.get('/insights');
+                if (response.data.insights && response.data.insights.length > 0) {
+                    setAiReport(response.data.insights[0]); // highest priority insight
+                }
+            } catch (error) {
+                console.error("Failed to fetch insights", error);
+            }
+        };
+
         fetchAccounts();
+        fetchInsights();
     }, []);
 
     const handleConnectMeta = async () => {
@@ -36,8 +49,8 @@ const Dashboard = () => {
         <DashboardLayout>
             <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Account Overview</h1>
-                    <p className="text-gray-500 mt-1">Here's what's happening with your ads today.</p>
+                    <h1 className="text-2xl font-bold text-gray-900">Your Ad Health Overview</h1>
+                    <p className="text-gray-500 mt-1">Simple explanations of how your ads are performing right now.</p>
                 </div>
                 <div className="mt-4 md:mt-0">
                     <Button onClick={handleConnectMeta} className="shadow-sm">
@@ -53,89 +66,75 @@ const Dashboard = () => {
                     <div className="mx-auto w-24 h-24 bg-primary-50 rounded-full flex items-center justify-center mb-6">
                         <AlertCircle className="w-10 h-10 text-primary-500" />
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">No Ad Data Found</h3>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">Let the AI Doctor Check Your Ads</h3>
                     <p className="text-gray-500 max-w-md mx-auto mb-8">
-                        Connect your Meta Ads account to start receiving AI-powered diagnostics and performance insights instantly.
+                        Connect your Facebook/Meta account first. Our AI will analyze your ads and tell you exactly what you need to do in plain English. No technical skills required.
                     </p>
-                    <Button onClick={handleConnectMeta} className="px-8 py-3">Connect Meta Account</Button>
+                    <Button onClick={handleConnectMeta} className="px-8 py-3 bg-primary-600">Give Access to Facebook</Button>
                 </div>
             ) : (
-                /* Dashboard Loaded State */
                 <>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <StatCard title="CTR Change" value={stats.ctr} icon={MousePointerClick} trend="down" />
-                        <StatCard title="CPC Change" value={stats.cpc} icon={CircleDollarSign} trend="down" />
-                        <StatCard title="Spend Today" value={stats.spend} icon={TrendingUp} trend="neutral" />
-                        <StatCard title="Health Score" value={stats.score} icon={Activity} trend="up" />
-                    </div>
-
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <div className="lg:col-span-2 space-y-6">
-                            <Card>
-                                <CardHeader className="flex flex-row items-center justify-between border-b pb-4">
-                                    <div className="space-y-1">
-                                        <CardTitle>Connected Accounts</CardTitle>
-                                        <p className="text-sm text-gray-500">Actively sinking data</p>
+                    {/* Plain Text Doctor Report Focus */}
+                    {aiReport && (
+                        <div className="mb-8 bg-indigo-50 border-l-4 border-indigo-500 rounded-lg p-6 shadow-sm flex flex-col md:flex-row gap-6 items-start">
+                            <div className="bg-white p-3 rounded-full shadow-sm shrink-0">
+                                <HeartPulse className="w-8 h-8 text-indigo-600" />
+                            </div>
+                            <div className="flex-1">
+                                <h2 className="text-xl font-bold text-gray-900 mb-1">Doctor's Primary Diagnosis</h2>
+                                <p className="text-lg text-red-600 font-medium mb-3">{aiReport.title}</p>
+                                
+                                <div className="grid md:grid-cols-2 gap-4 mt-4">
+                                    <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                                        <h3 className="text-sm font-bold text-gray-500 uppercase mb-2">What is happening?</h3>
+                                        <p className="text-gray-800 leading-relaxed">{aiReport.description}</p>
+                                        <div className="mt-3 p-3 bg-red-50 rounded-lg text-sm text-red-800">
+                                            <strong>Why?</strong> {aiReport.root_cause}
+                                        </div>
                                     </div>
-                                </CardHeader>
-                                <CardContent className="p-0">
-                                    <ul className="divide-y divide-gray-100">
-                                        {adAccounts.map(acc => (
-                                            <li key={acc.id} className="p-6 flex items-center justify-between hover:bg-gray-50 transition-colors">
-                                                <div className="flex items-center space-x-4">
-                                                    <div className="h-10 w-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 font-bold">M</div>
-                                                    <div>
-                                                        <p className="text-sm font-medium text-gray-900">{acc.name}</p>
-                                                        <p className="text-xs text-gray-500">ID: {acc.platform_account_id}</p>
-                                                    </div>
-                                                </div>
-                                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${acc.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                                                    {acc.status}
-                                                </span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </CardContent>
-                            </Card>
+                                    <div className="bg-white p-4 rounded-xl border border-indigo-100 shadow-sm">
+                                        <h3 className="text-sm font-bold text-indigo-500 uppercase mb-2">What you need to do:</h3>
+                                        <p className="text-gray-800 font-medium leading-relaxed">{aiReport.recommendation}</p>
+                                        <Button className="mt-4 bg-indigo-600 hover:bg-indigo-700 font-medium">✨ Apply Fix Automatically</Button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        
-                        <div className="space-y-6">
-                            <Card className="bg-gradient-to-br from-indigo-600 to-primary-700 border-none">
-                                <CardContent className="p-8 text-white">
-                                    <h3 className="text-xl font-bold mb-2">Automated Insights</h3>
-                                    <p className="text-indigo-100 text-sm mb-6">Our AI just analyzed yesterday's performance.</p>
-                                    <Link to="/insights">
-                                        <Button variant="secondary" className="w-full text-primary-700 font-bold">
-                                            View Full Report
-                                        </Button>
-                                    </Link>
-                                </CardContent>
-                            </Card>
-                        </div>
+                    )}
+
+                    <h2 className="text-lg font-bold text-gray-900 mb-4">Quick Vitals</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <Card>
+                            <CardContent className="pt-6">
+                                <p className="text-sm font-medium text-gray-500 mb-1">Click Rate (Are people interested?)</p>
+                                <div className="text-xl font-bold text-red-600">It's Too Low</div>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardContent className="pt-6">
+                                <p className="text-sm font-medium text-gray-500 mb-1">Costs (Are clicks cheap?)</p>
+                                <div className="text-xl font-bold text-orange-600">Getting Expensive</div>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardContent className="pt-6">
+                                <p className="text-sm font-medium text-gray-500 mb-1">Spending Health</p>
+                                <div className="text-xl font-bold text-green-600">Normal</div>
+                                <p className="text-xs text-gray-400 mt-1">($140.50 spent today)</p>
+                            </CardContent>
+                        </Card>
+                        <Card className="bg-primary-50 border-primary-100">
+                            <CardContent className="pt-6">
+                                <p className="text-sm font-medium text-primary-800 mb-1">Need more details?</p>
+                                <Link to="/insights" className="text-lg font-bold text-primary-700 hover:underline flex items-center">
+                                    Read Full AI Report <Activity className="w-5 h-5 ml-2" />
+                                </Link>
+                            </CardContent>
+                        </Card>
                     </div>
                 </>
             )}
         </DashboardLayout>
-    );
-};
-
-const StatCard = ({ title, value, icon: Icon, trend }) => {
-    return (
-        <Card>
-            <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <p className="text-sm font-medium text-gray-500 mb-1">{title}</p>
-                        <h4 className={`text-2xl font-bold ${trend === 'down' ? 'text-red-600' : trend === 'up' ? 'text-green-600' : 'text-gray-900'}`}>
-                            {value}
-                        </h4>
-                    </div>
-                    <div className="h-12 w-12 bg-primary-50 rounded-xl flex items-center justify-center">
-                        <Icon className="h-6 w-6 text-primary-600" />
-                    </div>
-                </div>
-            </CardContent>
-        </Card>
     );
 };
 

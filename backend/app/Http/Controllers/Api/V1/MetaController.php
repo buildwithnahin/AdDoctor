@@ -11,6 +11,12 @@ class MetaController extends Controller
 {
     public function authUrl()
     {
+        // Mock Implementation for Testing
+        if (env('META_MOCK', true)) {
+            $redirectUri = env('FRONTEND_URL', 'http://localhost:5173') . '/meta/callback?code=mock_authorization_code_123';
+            return response()->json(['url' => $redirectUri]);
+        }
+
         $appId = env('META_APP_ID');
         // using frontend callback URL
         $redirectUri = env('FRONTEND_URL', 'http://localhost:5173') . '/meta/callback';
@@ -31,6 +37,33 @@ class MetaController extends Controller
         $request->validate([
             'code' => 'required|string',
         ]);
+
+        // Mock Implementation for Testing
+        if (env('META_MOCK', true)) {
+            $user = $request->user();
+            $user->update(['meta_access_token' => 'mock_access_token_xyz']);
+
+            // Create a couple of dummy Ad Accounts
+            $mockAccounts = [
+                ['id' => 'act_123456789', 'name' => 'Demo E-commerce Ad Account', 'currency' => 'USD'],
+                ['id' => 'act_987654321', 'name' => 'Test Local Business', 'currency' => 'BDT']
+            ];
+
+            foreach ($mockAccounts as $acc) {
+                AdAccount::updateOrCreate(
+                    ['platform' => 'meta', 'platform_account_id' => $acc['id']],
+                    [
+                        'user_id' => $user->id,
+                        'name' => $acc['name'],
+                        'timezone' => 'Asia/Dhaka',
+                        'currency' => $acc['currency'],
+                        'status' => 'ACTIVE',
+                    ]
+                );
+            }
+
+            return response()->json(['message' => 'Mock Meta account connected successfully']);
+        }
 
         $appId = env('META_APP_ID');
         $appSecret = env('META_APP_SECRET');
