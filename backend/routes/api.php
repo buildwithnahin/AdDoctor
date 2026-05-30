@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\V1\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -12,14 +13,18 @@ use Illuminate\Support\Facades\Route;
 // Version 1 API Routes
 Route::prefix('v1')->group(function () {
     
-    // Auth Routes Example
-    // Route::post('/login', [App\Http\Controllers\Api\V1\AuthController::class, 'login']);
+    // Public Auth Routes
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
 
+    // Protected Routes
     Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/logout', [AuthController::class, 'logout']);
+        
         Route::get('/user', function (Request $request) {
             return $request->user();
         });
 
-        // Ad Diagnostic routes to be added here.
+        // Dashboard/Ad Diagnostic routes to be added here.
     });
 });
