@@ -33,6 +33,13 @@ The frontend is cleanly structured for ease of component and service management:
 - `src/hooks`: Custom React hooks (e.g., `useAuth`, `useAdMetrics`)
 - `src/utils`: Helper functions
 
+## Database Schema Highlights
+The scalable relational database is designed to handle big data metrics and AI analysis:
+- **Users:** Core authentication and dashboard ownership.
+- **Ad Hierarchies:** Multi-platform structure connecting `AdAccounts` -> `Campaigns` -> `AdSets` -> `Ads`. Ready to expand beyond Meta.
+- **DailyMetrics:** High-precision data layer storing daily performance snapshots (Impressions, Clicks, Spend, CPC, CTR, etc.) at the ad level.
+- **Insights:** Logs actionable, AI-generated diagnoses mapped to user data, categorized by severity, root cause, and recommendations.
+
 ## Setup Instructions
 
 ### Backend (Laravel)

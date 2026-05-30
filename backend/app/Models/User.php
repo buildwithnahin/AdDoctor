@@ -44,4 +44,20 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Get the ad accounts associated with the user.
+     */
+    public function adAccounts()
+    {
+        return $this->hasMany(AdAccount::class);
+    }
+
+    /**
+     * Get the insights generated for the user.
+     */
+    public function insights()
+    {
+        return $this->hasMany(Insight::class);
+    }
 }
