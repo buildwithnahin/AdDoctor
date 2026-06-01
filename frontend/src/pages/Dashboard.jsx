@@ -9,6 +9,8 @@ import { Link } from 'react-router-dom';
 const Dashboard = () => {
     const [adAccounts, setAdAccounts] = useState([]);
     const [aiReport, setAiReport] = useState(null);
+    const [isFixing, setIsFixing] = useState(false);
+    const [fixApplied, setFixApplied] = useState(false);
 
     useEffect(() => {
         const fetchAccounts = async () => {
@@ -43,6 +45,15 @@ const Dashboard = () => {
             console.error("Failed", error);
             alert("Connection error.");
         }
+    };
+
+    const handleApplyFix = () => {
+        setIsFixing(true);
+        // Mocking API call delay for the hackathon demo
+        setTimeout(() => {
+            setIsFixing(false);
+            setFixApplied(true);
+        }, 2000); // 2 seconds delay
     };
 
     return (
@@ -95,7 +106,25 @@ const Dashboard = () => {
                                     <div className="bg-white p-4 rounded-xl border border-indigo-100 shadow-sm">
                                         <h3 className="text-sm font-bold text-indigo-500 uppercase mb-2">What you need to do:</h3>
                                         <p className="text-gray-800 font-medium leading-relaxed">{aiReport.recommendation}</p>
-                                        <Button className="mt-4 bg-indigo-600 hover:bg-indigo-700 font-medium">✨ Apply Fix Automatically</Button>
+                                        
+                                        {!fixApplied ? (
+                                            <Button 
+                                                onClick={handleApplyFix} 
+                                                disabled={isFixing}
+                                                className="mt-4 bg-indigo-600 hover:bg-indigo-700 font-medium w-full sm:w-auto transition-all"
+                                            >
+                                                {isFixing ? (
+                                                    <><RefreshCw className="mr-2 h-4 w-4 animate-spin" /> Processing via API...</>
+                                                ) : (
+                                                    <>✨ Apply Fix Automatically</>
+                                                )}
+                                            </Button>
+                                        ) : (
+                                            <div className="mt-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg flex items-center">
+                                                <Activity className="h-5 w-5 mr-2 text-green-600" />
+                                                <strong>Success!</strong> &nbsp; Ad is paused and changes saved via Meta API.
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
